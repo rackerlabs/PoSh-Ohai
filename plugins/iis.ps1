@@ -1,7 +1,7 @@
 ﻿$provides = "iis_pools", "iis_apps"
 
 function Collect-Data {
-    #Import-Module WebAdministration
+
     [void][System.Reflection.Assembly]::LoadWithPartialName("Microsoft.Web.Administration")
    
     $iis = New-Object Microsoft.Web.Administration.ServerManager
@@ -92,12 +92,11 @@ function Collect-Data {
             foreach ($bindItem in $bindInfo) {
                 $app_conf.$site_name.Bindings.$bindInfo['HostName'] = $binding.host
                 $app_conf.$site_name.Bindings.$bindInfo['Protocol'] = $binding.Protocol
-                #$app_conf.$site_name.Bindings.$bindInfo['Address'] = ($binding.EndPoint | select address -ExpandProperty address)
                 $app_conf.$site_name.Bindings.$bindInfo['Address'] = $binding.EndPoint.address.IPAddressToString
                 $app_conf.$site_name.Bindings.$bindInfo['Port'] = $binding.EndPoint.Port
                 $app_conf.$site_name.Bindings.$bindInfo['EndPoint'] = $binding.EndPoint
                 $app_conf.$site_name.Bindings.$bindInfo['SslFlags'] = $binding.SslFlags
-                $app_conf.$site_name.Bindings.$bindInfo['CertificateHash'] = $binding.CertificateHash
+                $app_conf.$site_name.Bindings.$bindInfo['CertificateHash'] = if ($binding.CertificateHash){[System.BitConverter]::tostring($binding.CertificateHash).replace("-","")}
                 $app_conf.$site_name.Bindings.$bindInfo['CertificateStoreName'] = $binding.CertificateStoreName
             }
         }
