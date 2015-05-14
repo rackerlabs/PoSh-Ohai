@@ -3,11 +3,11 @@ $provides = "mycerts" #,"allcerts"
 function Collect-Data {
     $LMMyCerts = (Get-ChildItem -path Cert:\LocalMachine\My)
     
-    $mycerts = [ordered]@{}
+    $mycerts = New-Object System.Collections.Specialized.OrderedDictionary
     
     foreach ($cert in $LMMyCerts){
         $certhash = $cert.Thumbprint
-        $mycerts[$certhash] = [ordered]@{}
+        $mycerts[$certhash] = New-Object System.Collections.Specialized.OrderedDictionary
         $mycerts[$certhash]["SubjectName"] = $cert.SubjectName.name
         $mycerts[$certhash]["DnsNameList"] = $cert.DnsNameList.Unicode
         $mycerts[$certhash]["Subject"] = $cert.Subject
@@ -17,27 +17,27 @@ function Collect-Data {
         $mycerts[$certhash]["NotBefore"] = ($cert.NotBefore).ToString("dd-MMM-yyyy")
         $mycerts[$certhash]["NotAfter"] = ($cert.NotAfter).ToString("dd-MMM-yyyy")
         $mycerts[$certhash]["PSPath"] = $cert.PSPath
-<#
-        These make the ConvertTo-JSON main function crash :(
+        <#
+            These make the ConvertTo-JSON main function crash :(
         
-        DO NOT ENABLE without further testing!
+            DO NOT ENABLE without further testing!
 
-        $mycerts[$certhash]["PSProvider"] = $cert.PSProvider
-        $mycerts[$certhash]["PSDrive"] = $cert.PSDrive
-#>
+            $mycerts[$certhash]["PSProvider"] = $cert.PSProvider
+            $mycerts[$certhash]["PSDrive"] = $cert.PSDrive
+        #>
         $mycerts[$certhash]["PSChildName"] = $cert.PSChildName
         $mycerts[$certhash]["SerialNumber"] = $cert.SerialNumber
         $mycerts[$certhash]["Thumbprint"] = $cert.Thumbprint
     }
 
-    [ordered]@{"MyCerts" = $mycerts}
+    @{"MyCerts" = $mycerts}
 
-<#
-    #Work in progress#
+    <#
+        #Work in progress#
 
-    $LMCerts = (Get-ChildItem -path Cert:\LocalMachine -Recurse)
+        $LMCerts = (Get-ChildItem -path Cert:\LocalMachine -Recurse)
 
-    foreach ($cert in $LMCerts){
+        foreach ($cert in $LMCerts){
         $certhash = $cert.Thumbprint
         $allcerts[$certhash] = [ordered]@{}
         $allcerts[$certhash]["SubjectName"] = $cert.SubjectName.name
@@ -52,10 +52,11 @@ function Collect-Data {
         $allcerts[$certhash]["PSChildName"] = $cert.PSChildName
         $allcerts[$certhash]["SerialNumber"] = $cert.SerialNumber
         $allcerts[$certhash]["Thumbprint"] = $cert.Thumbprint
-    }
+        }
 
 
-    [ordered]@{"AllCerts" = $allcerts}
+        @{"AllCerts" = $allcerts}
 
-#>
+    #>
 }
+
