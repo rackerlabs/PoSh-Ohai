@@ -19,7 +19,7 @@
 ModuleToProcess = 'PoSh-Ohai.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.2.0'
+ModuleVersion = '1.4.0'
 
 # ID used to uniquely identify this module
 GUID = '24c4a4b0-a95f-4b20-8118-3846d22c88f1'
