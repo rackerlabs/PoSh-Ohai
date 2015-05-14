@@ -11,4 +11,3 @@ function Collect-Data
     $output.Add('windows_updates' , $patchlist)
     $output
 }
-Collect-Data
