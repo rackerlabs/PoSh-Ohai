@@ -1,31 +1,12 @@
-﻿$provides = 'windows_updates'
+﻿#requires -Version 1
+$provides = 'windows_updates'
 
-function Collect-Data {
-    $output = New-Object System.Collections.Specialized.OrderedDictionary
-    $windows_updates = New-Object System.Collections.Specialized.OrderedDictionary
+function Collect-Data 
+{
+    $output = New-Object -TypeName System.Collections.Specialized.OrderedDictionary
+    $windows_updates = New-Object -TypeName System.Collections.Specialized.OrderedDictionary
 
-    $U_Session = New-Object -ComObject Microsoft.Update.Session
-    $U_Searcher = $U_Session.CreateUpdateSearcher()
-    $U_Searcher.Online = $true
-    $U_Installed = $U_Searcher.Search("IsInstalled=1 and Type='Software'")
-    $listpatches = @{}
-    $patchlist = @()
-    foreach ($UI_Updates in $U_Installed.Updates){
-        foreach($k in $UI_Updates.KBArticleIDs){
-            $Xkey = 'KB' + $k
-        }
-        foreach($v in $UI_Updates.SecurityBulletinIDs){
-            $XValue = $v
-        }
-        foreach($d in $UI_Updates.LastDeploymentChangeTime){
-            $XDate = $d
-        }
-        $listpatches.Article = $XKey
-        $listpatches.Bulletin = $XValue
-        $listpatches.DateInstalled = $XDate
-        $ObjectName = New-Object PSObject -Property $listpatches
-        $patchlist += $ObjectName
-    }
+    $patchlist = Get-HotFix | Select-Object @{name='Article';expression={$_.HotFixId}}, @{name='DateInstalled';expression={$_.InstalledOn}}
 
     $output.Add('windows_updates' , $patchlist)
     $output

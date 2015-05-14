@@ -1,8 +1,10 @@
+#requires -Version 1
 $provides = 'loggedon_users'
 
-function Collect-Data {
-    $output = New-Object System.Collections.Specialized.OrderedDictionary
-    $loggedon_users = New-Object System.Collections.Specialized.OrderedDictionary
+function Collect-Data 
+{
+    $output = New-Object -TypeName System.Collections.Specialized.OrderedDictionary
+    $loggedon_users = New-Object -TypeName System.Collections.Specialized.OrderedDictionary
     $session_user = @{}
 
     $regex_antecedent = '.+Domain="(.+)",Name="(.+)"$'
@@ -21,10 +23,10 @@ function Collect-Data {
         '11' = 'CachedInteractive'
     }
 
-    $logon_sessions = Get-WmiObject win32_logonsession -ComputerName $env:COMPUTERNAME | Select-Object AuthenticationPackage,LogonId,LogonType,StartTime
-    $logon_users = Get-WmiObject win32_loggedonuser -ComputerName $env:COMPUTERNAME | Select-Object Antecedent, Dependent
+    $logon_sessions = Get-WmiObject -Class win32_logonsession -ComputerName $env:COMPUTERNAME | Select-Object -Property AuthenticationPackage, LogonId, LogonType, StartTime
+    $logon_users = Get-WmiObject -Class win32_loggedonuser -ComputerName $env:COMPUTERNAME | Select-Object -Property Antecedent, Dependent
 
-    $logon_users |foreach {
+    $logon_users |ForEach-Object -Process {
         $_.antecedent -match $regex_antecedent > $null
         $username = $matches[1] + '\' + $matches[2]
         $_.dependent -match $regex_dependent > $null
@@ -32,7 +34,7 @@ function Collect-Data {
         $session_user[$session] += $username
     }
 
-    $user = $logon_sessions | foreach {
+    $user = $logon_sessions | ForEach-Object -Process {
         $starttime = [management.managementdatetimeconverter]::todatetime($_.starttime)
         $loggedonuser = New-Object -TypeName psobject
         $loggedonuser | Add-Member -MemberType NoteProperty -Name 'Session' -Value $_.logonid

@@ -4,7 +4,9 @@ function Collect-Data {
 
     $rawNetstat = netstat -ano | Select-String -Pattern '\s+(TCP|UDP)'
     $psObjNetstat = @()
+    $Output = New-Object -TypeName System.Collections.Specialized.OrderedDictionary
 
+    
     ForEach($connection in $rawNetstat){
 
         $item = $connection.line.split(' ',[System.StringSplitOptions]::RemoveEmptyEntries)
@@ -49,5 +51,6 @@ function Collect-Data {
         $psObjNetstat += $psitem
     }
 
-    [ordered]@{"netstat" = $psObjNetstat}
-}
+    $Output.add( 'netstat' , $psObjNetstat)
+    $Output
+    }
