@@ -1,7 +1,7 @@
 #requires -Version 2
 
 #region Variables
-$PoshOhaiModuleVersionLatest = '1.4.1'
+$PoshOhaiModuleVersionLatest = '1.4.2'
 $TempDir = 'C:\rs-pkgs'
 $ModuleDir = $env:PSModulePath.Split(';') | Where-Object -FilterScript {
     $_.StartsWith($env:SystemRoot)
